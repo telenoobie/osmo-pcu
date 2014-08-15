@@ -557,10 +557,10 @@ struct msgb *gprs_rlcmac_tbf::create_dl_ass(uint32_t fn)
 				"finished.\n");
 			return NULL;
 		}
-		#warning "THIS should probably go over the IMSI too"
-		new_dl_tbf = ul_tbf->bts->dl_tbf_by_tlli(m_tlli);
-	} else
-		new_dl_tbf = static_cast<gprs_rlcmac_dl_tbf *>(this);
+	}
+
+	new_dl_tbf = static_cast<gprs_rlcmac_dl_tbf *>(m_new_tbf);
+	new_dl_tbf->was_releasing = was_releasing;
 	if (!new_dl_tbf) {
 		LOGP(DRLCMACDL, LOGL_ERROR, "We have a schedule for downlink "
 			"assignment at uplink %s, but there is no downlink "
@@ -625,13 +625,7 @@ struct msgb *gprs_rlcmac_tbf::create_ul_ass(uint32_t fn)
 			return NULL;
 	}
 
-	/* on down TBF we get the uplink TBF to be assigned. */
-#warning "Probably want to find by IMSI too"
-	if (direction == GPRS_RLCMAC_DL_TBF)
-		new_tbf = bts->ul_tbf_by_tlli(m_tlli);
-	else
-		new_tbf = static_cast<gprs_rlcmac_ul_tbf *>(this);
-
+	new_tbf = static_cast<gprs_rlcmac_ul_tbf *>(m_new_tbf);
 	if (!new_tbf) {
 		LOGP(DRLCMACUL, LOGL_ERROR, "We have a schedule for uplink "
 			"assignment at downlink %s, but there is no uplink "
